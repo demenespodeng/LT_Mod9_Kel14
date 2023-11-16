@@ -50,6 +50,26 @@ namespace tugasmod9.Controllers
             string response = "Sukses menambahkan data Akun" + "\nNama : " + UserDTO.Username;
             return CreatedAtRoute("GetUser", new { id = UserDTO.Id }, response);
         }
+        [HttpPost("/login")]
+        public ActionResult<UserDTO> LoginAcc([FromBody] UserDTO userDTO)
+        {
+            if (userDTO == null)
+            {
+                return BadRequest("Username/Password Invalid");
+            }
+
+            var user = UserStore.UserList.FirstOrDefault(u => u.Username == userDTO.Username);
+            if (user == null)
+            {
+                return NotFound("Username tidak ditemukan");
+            }
+
+            if (user.Password != userDTO.Password)
+            {
+                return Unauthorized("Password Salah");
+            }
+            return Ok("berhasil login");
+        }
 
         [HttpDelete("{id:int}", Name = "DeleteUser")]
         public IActionResult DeleteUser(int id)
